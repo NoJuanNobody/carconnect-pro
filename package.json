@@ -1,0 +1,31 @@
+{
+  "name": "carconnect-pro",
+  "version": "1.0.0",
+  "description": "Professional automotive infotainment system with hardware integration, navigation, and audio management",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --passWithNoTests",
+    "test:unit": "jest tests/unit --passWithNoTests",
+    "test:integration": "jest tests/integration --passWithNoTests",
+    "test:performance": "jest tests/performance --passWithNoTests",
+    "lint": "eslint src/ tests/ --ext .js --no-error-on-unmatched-pattern",
+    "format": "prettier --write 'src/**/*.js' 'tests/**/*.js'"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0",
+    "joi": "^17.13.0",
+    "uuid": "^10.0.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.4.0",
+    "supertest": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
