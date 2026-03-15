@@ -15,6 +15,14 @@ const createAudioRouter = (audioService) => {
 
   router.get('/sources', (req, res) => controller.getSources(req, res));
 
+  router.get('/controls', (req, res) => {
+    res.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      data: service.getControls(),
+    });
+  });
+
   router.post(
     '/source',
     validateSwitchSource,

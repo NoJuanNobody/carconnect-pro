@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>CarConnect Pro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0e17;
+  --surface: #111827;
+  --surface-2: #1a2235;
+  --border: #1e293b;
+  --accent: #f97316;
+  --accent-glow: rgba(249, 115, 22, 0.3);
+  --cyan: #06b6d4;
+  --cyan-glow: rgba(6, 182, 212, 0.25);
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --text: #e2e8f0;
+  --text-dim: #64748b;
+  --gauge-track: #1e293b;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(249, 115, 22, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(6, 182, 212, 0.04) 0%, transparent 50%),
+    var(--bg);
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  gap: 8px;
+  padding: 8px;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.header h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status-dots {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.status-dot.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+
+/* Panels */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+}
+
+.panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* Gauges Panel */
+.gauges-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.gauge-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gauge-track {
+  fill: none;
+  stroke: var(--gauge-track);
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.gauge-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.3s ease;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.gauge-fill.speed { stroke: var(--accent); }
+.gauge-fill.rpm { stroke: var(--cyan); }
+
+.gauge-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.gauge-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gauge-value.speed-val { color: var(--accent); }
+.gauge-value.rpm-val { color: var(--cyan); }
+
+.gauge-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.gear-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.gear-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+  line-height: 1;
+}
+
+.gear-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Vehicle Info Panel */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.info-card {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+
+.info-card-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.info-card-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.info-card-value.warn { color: var(--yellow); }
+.info-card-value.danger { color: var(--red); }
+.info-card-value.ok { color: var(--green); }
+
+.info-card-unit {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: 2px;
+}
+
+/* Audio Panel */
+.audio-sources {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.source-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  padding: 8px 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 48px;
+  text-align: center;
+}
+
+.source-btn:active { transform: scale(0.95); }
+.source-btn.active {
+  background: linear-gradient(135deg, var(--accent), #ea580c);
+  border-color: var(--accent);
+  color: white;
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.slider-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  min-width: 52px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.slider-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  min-width: 32px;
+  text-align: right;
+  color: var(--accent);
+}
+
+input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--gauge-track);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Footer */
+.footer {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 6px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dtc-badge {
+  background: var(--red);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dtc-badge.clear {
+  background: var(--green);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    overflow-y: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  body { overflow: auto; }
+
+  .gauge-container { width: 140px; height: 140px; }
+  .gauge-value { font-size: 28px; }
+  .gear-value { font-size: 36px; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+  .gauges-panel { gap: 10px; }
+  .gauge-container { width: 110px; height: 110px; }
+  .gauge-value { font-size: 22px; }
+  .gear-value { font-size: 28px; }
+  .audio-sources { gap: 4px; }
+  .source-btn { padding: 6px 8px; font-size: 11px; }
+}
+
+/* Chat Panel */
+.chat-panel {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  max-height: 280px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  min-height: 80px;
+  max-height: 180px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.chat-msg {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.chat-msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--accent), #ea580c);
+  color: white;
+  border-bottom-right-radius: 3px;
+}
+
+.chat-msg.assistant {
+  align-self: flex-start;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 3px;
+}
+
+.chat-msg.system {
+  align-self: center;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input:focus { border-color: var(--accent); }
+.chat-input::placeholder { color: var(--text-dim); }
+
+.chat-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-dim);
+  padding: 10px 14px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+}
+
+.chat-btn:active { transform: scale(0.95); }
+.chat-btn.send { background: linear-gradient(135deg, var(--accent), #ea580c); color: white; border-color: var(--accent); }
+.chat-btn.listening { background: var(--red); color: white; border-color: var(--red); box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+.chat-btn.convo-active { background: var(--cyan); color: white; border-color: var(--cyan); box-shadow: 0 0 12px var(--cyan-glow); }
+.chat-btn:disabled { opacity: 0.4; cursor: default; }
+
+.tool-badge {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  margin-right: 4px;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 24px rgba(239, 68, 68, 0.7); }
+}
+.chat-btn.listening { animation: micPulse 1.5s ease-in-out infinite; }
+
+.chat-thinking {
+  display: inline-flex;
+  gap: 4px;
+  padding: 8px 16px;
+}
+.chat-thinking span {
+  width: 6px; height: 6px;
+  background: var(--text-dim);
+  border-radius: 50%;
+  animation: chatDot 1.2s ease-in-out infinite;
+}
+.chat-thinking span:nth-child(2) { animation-delay: 0.15s; }
+.chat-thinking span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes chatDot { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+/* Media Panel */
+.media-panel {
+  grid-column: 1 / -1;
+  display: none;
+}
+
+.media-panel.active { display: block; }
+
+.media-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.media-services {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.service-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  padding: 6px 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.service-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+.service-btn:active { transform: scale(0.95); }
+
+.media-close {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--red);
+  padding: 6px 10px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.media-close:hover { border-color: var(--red); background: rgba(239, 68, 68, 0.1); }
+
+.media-frame-container {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+}
+
+.media-frame-container iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+}
+
+.media-url-bar {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.media-url-input {
+  flex: 1;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 8px 12px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  outline: none;
+}
+
+.media-url-input:focus { border-color: var(--cyan); }
+.media-url-input::placeholder { color: var(--text-dim); }
+
+.media-go-btn {
+  background: var(--cyan);
+  border: 1px solid var(--cyan);
+  border-radius: 6px;
+  color: white;
+  padding: 8px 14px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .media-frame-container iframe { height: 200px; }
+}
+
+/* Animations */
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.reconnecting { animation: pulse 1.5s ease-in-out infinite; }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+  <!-- Header -->
+  <div class="header">
+    <h1>CARCONNECT PRO</h1>
+    <div class="status-dots">
+      <span><span class="status-dot" id="ws-dot"></span><span id="ws-label">--</span></span>
+      <span><span class="status-dot" id="obd-dot"></span>OBD: <span id="obd-mode">--</span></span>
+    </div>
+  </div>
+
+  <!-- Gauges -->
+  <div class="panel">
+    <div class="panel-title">Telemetry</div>
+    <div class="gauges-panel">
+      <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 120 120">
+          <circle class="gauge-track" cx="60" cy="60" r="50" stroke-dasharray="235.6" stroke-dashoffset="59" />
+          <circle class="gauge-fill speed" id="speed-arc" cx="60" cy="60" r="50" stroke-dasharray="235.6" stroke-dashoffset="176.7" />
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-value speed-val" id="speed-val">0</div>
+          <div class="gauge-label">km/h</div>
+        </div>
+      </div>
+      <div class="gear-display">
+        <div class="gear-value" id="gear-val">P</div>
+        <div class="gear-label">Gear</div>
+      </div>
+      <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 120 120">
+          <circle class="gauge-track" cx="60" cy="60" r="50" stroke-dasharray="235.6" stroke-dashoffset="59" />
+          <circle class="gauge-fill rpm" id="rpm-arc" cx="60" cy="60" r="50" stroke-dasharray="235.6" stroke-dashoffset="176.7" />
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-value rpm-val" id="rpm-val">0</div>
+          <div class="gauge-label">RPM</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vehicle Info -->
+  <div class="panel">
+    <div class="panel-title">Vehicle</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">Coolant</div>
+        <div class="info-card-value ok" id="coolant-val">--<span class="info-card-unit">&deg;C</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Fuel</div>
+        <div class="info-card-value ok" id="fuel-val">--<span class="info-card-unit">%</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Throttle</div>
+        <div class="info-card-value" id="throttle-val">--<span class="info-card-unit">%</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Engine Load</div>
+        <div class="info-card-value" id="load-val">--<span class="info-card-unit">%</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Battery</div>
+        <div class="info-card-value ok" id="battery-val">--<span class="info-card-unit">V</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Ignition</div>
+        <div class="info-card-value" id="ignition-val">--</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Controls -->
+  <div class="panel" style="grid-column: 1 / -1;">
+    <div class="panel-title">Audio</div>
+    <div class="audio-sources" id="audio-sources"></div>
+    <div class="slider-group">
+      <div class="slider-row">
+        <span class="slider-label">Volume</span>
+        <input type="range" id="vol-slider" min="0" max="100" value="50">
+        <span class="slider-value" id="vol-val">50</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Bass</span>
+        <input type="range" id="bass-slider" min="-10" max="10" value="0">
+        <span class="slider-value" id="bass-val">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Treble</span>
+        <input type="range" id="treble-slider" min="-10" max="10" value="0">
+        <span class="slider-value" id="treble-val">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Balance</span>
+        <input type="range" id="balance-slider" min="-100" max="100" value="0">
+        <span class="slider-value" id="balance-val">0</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label">Fade</span>
+        <input type="range" id="fade-slider" min="-100" max="100" value="0">
+        <span class="slider-value" id="fade-val">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Media Player -->
+  <div class="panel media-panel" id="media-panel">
+    <div class="media-header">
+      <div class="panel-title" style="margin-bottom:0;">Media</div>
+      <div class="media-services">
+        <button class="service-btn" onclick="openService('youtube')">YouTube</button>
+        <button class="service-btn" onclick="openService('primevideo')">Prime Video</button>
+        <button class="service-btn" onclick="openService('netflix')">Netflix</button>
+        <button class="service-btn" onclick="openService('disneyplus')">Disney+</button>
+        <button class="service-btn" onclick="openService('hbomax')">Max</button>
+        <button class="service-btn" onclick="openService('spotify')">Spotify</button>
+      </div>
+      <button class="media-close" id="media-close-btn" onclick="closeMedia()">&#x2715;</button>
+    </div>
+    <div class="media-frame-container">
+      <iframe id="media-frame" src="about:blank" allow="autoplay; encrypted-media; fullscreen" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+    </div>
+    <div class="media-url-bar">
+      <input class="media-url-input" id="media-url" type="text" placeholder="Paste a YouTube URL or search..." autocomplete="off">
+      <button class="media-go-btn" onclick="loadMediaUrl()">Go</button>
+    </div>
+  </div>
+
+  <!-- Claude Chat -->
+  <div class="panel chat-panel">
+    <div class="panel-title">Claude Assistant</div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg system" id="chat-status">Checking availability...</div>
+    </div>
+    <div class="chat-input-row">
+      <button class="chat-btn" id="convo-btn" title="Conversation mode — hands-free">&#x1F504;</button>
+      <button class="chat-btn" id="mic-btn" title="Push to talk">&#x1F3A4;</button>
+      <input class="chat-input" id="chat-input" type="text" placeholder="Ask me anything..." autocomplete="off">
+      <button class="chat-btn send" id="send-btn" title="Send">&#x27A4;</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-item">
+      <span class="dtc-badge clear" id="dtc-badge">NO FAULTS</span>
+    </div>
+    <div class="footer-item" style="margin-left: auto;">
+      <span id="clock"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // --- DOM refs ---
+  const speedVal = document.getElementById('speed-val');
+  const speedArc = document.getElementById('speed-arc');
+  const rpmVal = document.getElementById('rpm-val');
+  const rpmArc = document.getElementById('rpm-arc');
+  const gearVal = document.getElementById('gear-val');
+  const coolantVal = document.getElementById('coolant-val');
+  const fuelVal = document.getElementById('fuel-val');
+  const throttleVal = document.getElementById('throttle-val');
+  const loadVal = document.getElementById('load-val');
+  const batteryVal = document.getElementById('battery-val');
+  const ignitionVal = document.getElementById('ignition-val');
+  const wsDot = document.getElementById('ws-dot');
+  const wsLabel = document.getElementById('ws-label');
+  const obdDot = document.getElementById('obd-dot');
+  const obdMode = document.getElementById('obd-mode');
+  const audioSourcesEl = document.getElementById('audio-sources');
+  const dtcBadge = document.getElementById('dtc-badge');
+  const clockEl = document.getElementById('clock');
+
+  const sliders = {
+    volume: { slider: document.getElementById('vol-slider'), display: document.getElementById('vol-val') },
+    bass: { slider: document.getElementById('bass-slider'), display: document.getElementById('bass-val') },
+    treble: { slider: document.getElementById('treble-slider'), display: document.getElementById('treble-val') },
+    balance: { slider: document.getElementById('balance-slider'), display: document.getElementById('balance-val') },
+    fade: { slider: document.getElementById('fade-slider'), display: document.getElementById('fade-val') },
+  };
+
+  // Gauge constants: 270-degree arc
+  const ARC_LENGTH = 176.7; // 3/4 of circumference (235.6 * 0.75)
+  const MAX_SPEED = 220;
+  const MAX_RPM = 7000;
+
+  let ws = null;
+  let reconnectDelay = 1000;
+  let activeSource = 'radio';
+  let audioSources = [];
+  let sliderTimeout = null;
+
+  // --- WebSocket ---
+  function connectWS() {
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    ws = new WebSocket(proto + '//' + location.host);
+
+    ws.onopen = function() {
+      reconnectDelay = 1000;
+      setConnectionStatus('connected');
+    };
+
+    ws.onclose = function() {
+      setConnectionStatus('disconnected');
+      setTimeout(connectWS, reconnectDelay);
+      reconnectDelay = Math.min(reconnectDelay * 2, 30000);
+    };
+
+    ws.onerror = function() {
+      ws.close();
+    };
+
+    ws.onmessage = function(evt) {
+      try {
+        var msg = JSON.parse(evt.data);
+        handleMessage(msg);
+      } catch(e) { /* ignore */ }
+    };
+  }
+
+  function setConnectionStatus(status) {
+    if (status === 'connected') {
+      wsDot.className = 'status-dot green';
+      wsLabel.textContent = 'Live';
+    } else {
+      wsDot.className = 'status-dot red';
+      wsLabel.textContent = 'Offline';
+    }
+  }
+
+  function handleMessage(msg) {
+    switch(msg.type) {
+      case 'init':
+        if (msg.data.obd) updateVehicleData(msg.data.obd);
+        if (msg.data.obdConnection) updateOBDStatus(msg.data.obdConnection);
+        if (msg.data.audio) {
+          audioSources = msg.data.audio.sources;
+          renderAudioSources();
+          updateAudioControls(msg.data.audio.controls);
+        }
+        if (msg.data.vehicle) updateVehicleInfo(msg.data.vehicle);
+        break;
+      case 'vehicleData':
+        updateVehicleData(msg.data);
+        break;
+      case 'audioState':
+        activeSource = msg.data.currentSource;
+        renderAudioSources();
+        break;
+      case 'audioControls':
+        updateAudioControls(msg.data.controls);
+        break;
+      case 'obdMode':
+        updateOBDStatus({ mode: msg.data.mode, connected: true });
+        break;
+    }
+  }
+
+  // --- Gauge updates ---
+  function updateGauge(arcEl, valueEl, value, max) {
+    var pct = Math.min(value / max, 1);
+    var offset = ARC_LENGTH - (pct * ARC_LENGTH);
+    arcEl.style.strokeDashoffset = offset;
+    valueEl.textContent = Math.round(value);
+  }
+
+  function updateVehicleData(data) {
+    if (data.speed !== undefined) updateGauge(speedArc, speedVal, data.speed, MAX_SPEED);
+    if (data.rpm !== undefined) updateGauge(rpmArc, rpmVal, data.rpm, MAX_RPM);
+    if (data.coolantTemp !== undefined) {
+      coolantVal.innerHTML = Math.round(data.coolantTemp) + '<span class="info-card-unit">&deg;C</span>';
+      coolantVal.className = 'info-card-value ' + (data.coolantTemp > 105 ? 'danger' : data.coolantTemp > 95 ? 'warn' : 'ok');
+    }
+    if (data.fuelLevel !== undefined) {
+      fuelVal.innerHTML = Math.round(data.fuelLevel) + '<span class="info-card-unit">%</span>';
+      fuelVal.className = 'info-card-value ' + (data.fuelLevel < 10 ? 'danger' : data.fuelLevel < 20 ? 'warn' : 'ok');
+    }
+    if (data.throttle !== undefined) {
+      throttleVal.innerHTML = Math.round(data.throttle) + '<span class="info-card-unit">%</span>';
+    }
+    if (data.engineLoad !== undefined) {
+      loadVal.innerHTML = Math.round(data.engineLoad) + '<span class="info-card-unit">%</span>';
+    }
+  }
+
+  function updateVehicleInfo(data) {
+    if (data.batteryVoltage !== undefined) {
+      batteryVal.innerHTML = data.batteryVoltage.toFixed(1) + '<span class="info-card-unit">V</span>';
+      batteryVal.className = 'info-card-value ' + (data.batteryVoltage < 11.5 ? 'danger' : data.batteryVoltage < 12 ? 'warn' : 'ok');
+    }
+    if (data.gear !== undefined) {
+      var gearMap = { park: 'P', reverse: 'R', neutral: 'N', drive: 'D', sport: 'S' };
+      gearVal.textContent = gearMap[data.gear] || data.gear;
+    }
+    if (data.ignition !== undefined || data.ignitionState !== undefined) {
+      var ig = data.ignitionState || (data.ignition ? 'on' : 'off');
+      ignitionVal.textContent = ig.toUpperCase();
+      ignitionVal.className = 'info-card-value ' + (ig === 'on' || ig === 'running' ? 'ok' : '');
+    }
+  }
+
+  function updateOBDStatus(info) {
+    if (info.mode === 'elm327') {
+      obdDot.className = 'status-dot green';
+      obdMode.textContent = 'ELM327';
+    } else if (info.mode === 'simulation') {
+      obdDot.className = 'status-dot yellow';
+      obdMode.textContent = 'SIM';
+    } else {
+      obdDot.className = 'status-dot red';
+      obdMode.textContent = '--';
+    }
+  }
+
+  // --- Audio ---
+  function renderAudioSources() {
+    audioSourcesEl.innerHTML = '';
+    var sources = audioSources.length ? audioSources : [
+      {id:'radio',name:'Radio'},{id:'bluetooth',name:'BT'},
+      {id:'usb',name:'USB'},{id:'aux',name:'AUX'},
+      {id:'android_auto',name:'Android'},{id:'apple_carplay',name:'CarPlay'}
+    ];
+    sources.forEach(function(src) {
+      var btn = document.createElement('button');
+      btn.className = 'source-btn' + (src.id === activeSource ? ' active' : '');
+      btn.textContent = src.name;
+      btn.onclick = function() { switchSource(src.id); };
+      audioSourcesEl.appendChild(btn);
+    });
+  }
+
+  function switchSource(sourceId) {
+    fetch('/api/v1/audio/source', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sourceId: sourceId, fadeTime: 100 }),
+    }).then(function(r) { return r.json(); }).then(function(data) {
+      if (data.success) {
+        activeSource = data.data.currentSource;
+        renderAudioSources();
+      }
+    }).catch(function() {});
+  }
+
+  function updateAudioControls(controls) {
+    if (!controls) return;
+    Object.keys(controls).forEach(function(key) {
+      var s = sliders[key];
+      if (s) {
+        s.slider.value = controls[key];
+        s.display.textContent = controls[key];
+      }
+    });
+  }
+
+  function sendControlUpdate(key, value) {
+    clearTimeout(sliderTimeout);
+    sliderTimeout = setTimeout(function() {
+      var body = {};
+      body[key] = parseInt(value, 10);
+      fetch('/api/v1/audio/control', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }).catch(function() {});
+    }, 50);
+  }
+
+  // Bind sliders
+  Object.keys(sliders).forEach(function(key) {
+    var s = sliders[key];
+    s.slider.addEventListener('input', function() {
+      s.display.textContent = s.slider.value;
+      sendControlUpdate(key, s.slider.value);
+    });
+  });
+
+  // --- Clock ---
+  function updateClock() {
+    var now = new Date();
+    clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // --- Init ---
+  // Load initial data via REST, then connect WebSocket for live updates
+  fetch('/api/v1/audio/sources').then(function(r) { return r.json(); }).then(function(data) {
+    if (data.data && data.data.sources) {
+      audioSources = data.data.sources;
+      activeSource = data.data.activeSource || 'radio';
+      renderAudioSources();
+    }
+  }).catch(function() { renderAudioSources(); });
+
+  fetch('/api/v1/audio/controls').then(function(r) { return r.json(); }).then(function(data) {
+    if (data.data) updateAudioControls(data.data);
+  }).catch(function() {});
+
+  fetch('/api/v1/vehicle/state').then(function(r) { return r.json(); }).then(function(data) {
+    if (data.data) {
+      updateVehicleData(data.data);
+      updateVehicleInfo(data.data);
+    }
+  }).catch(function() {});
+
+  fetch('/api/v1/vehicle/obd').then(function(r) { return r.json(); }).then(function(data) {
+    if (data.data) updateOBDStatus(data.data);
+  }).catch(function() {});
+
+  connectWS();
+  setConnectionStatus('disconnected');
+
+  // --- Media Player ---
+  var mediaPanel = document.getElementById('media-panel');
+  var mediaFrame = document.getElementById('media-frame');
+  var mediaUrlInput = document.getElementById('media-url');
+
+  var serviceUrls = {
+    youtube: 'https://m.youtube.com',
+    primevideo: 'https://www.primevideo.com',
+    netflix: 'https://www.netflix.com',
+    disneyplus: 'https://www.disneyplus.com',
+    hbomax: 'https://play.max.com',
+    spotify: 'https://open.spotify.com',
+  };
+
+  window.openService = function(name) {
+    var url = serviceUrls[name];
+    if (url) {
+      mediaFrame.src = url;
+      mediaPanel.classList.add('active');
+    }
+  };
+
+  window.closeMedia = function() {
+    mediaFrame.src = 'about:blank';
+    mediaPanel.classList.remove('active');
+  };
+
+  window.loadMediaUrl = function() {
+    var val = mediaUrlInput.value.trim();
+    if (!val) return;
+
+    // Check if it's a YouTube URL — try to embed it
+    var ytMatch = val.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if (ytMatch) {
+      mediaFrame.src = 'https://www.youtube.com/embed/' + ytMatch[1] + '?autoplay=1';
+      mediaPanel.classList.add('active');
+      mediaUrlInput.value = '';
+      return;
+    }
+
+    // Check if it looks like a search query (no dots/slashes)
+    if (!val.includes('.') && !val.includes('/')) {
+      mediaFrame.src = 'https://m.youtube.com/results?search_query=' + encodeURIComponent(val);
+      mediaPanel.classList.add('active');
+      mediaUrlInput.value = '';
+      return;
+    }
+
+    // Otherwise treat as URL
+    if (!val.startsWith('http')) val = 'https://' + val;
+    mediaFrame.src = val;
+    mediaPanel.classList.add('active');
+    mediaUrlInput.value = '';
+  };
+
+  mediaUrlInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') window.loadMediaUrl();
+  });
+
+  function handleMediaCommand(cmd) {
+    if (!cmd || !cmd.action) return;
+    if (cmd.action === 'open_url' && cmd.url) {
+      mediaFrame.src = cmd.url;
+      mediaPanel.classList.add('active');
+    } else if (cmd.action === 'embed_youtube' && cmd.videoId) {
+      mediaFrame.src = 'https://www.youtube.com/embed/' + cmd.videoId + '?autoplay=1';
+      mediaPanel.classList.add('active');
+    } else if (cmd.action === 'close_media') {
+      window.closeMedia();
+    }
+  }
+
+  // --- Claude Chat with MCP tools + continuous conversation ---
+  var chatMessages = document.getElementById('chat-messages');
+  var chatInput = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('send-btn');
+  var micBtn = document.getElementById('mic-btn');
+  var convoBtn = document.getElementById('convo-btn');
+  var chatStatus = document.getElementById('chat-status');
+  var chatAvailable = false;
+  var chatSending = false;
+  var convoMode = false; // continuous conversation mode
+
+  // Speech recognition
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recognition = null;
+  var isListening = false;
+
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = function(event) {
+      var transcript = event.results[0][0].transcript;
+      chatInput.value = transcript;
+      isListening = false;
+      micBtn.classList.remove('listening');
+      micBtn.innerHTML = '&#x1F3A4;';
+      sendChatMessage(transcript);
+    };
+
+    recognition.onerror = function() { stopListening(); };
+    recognition.onend = function() {
+      // Only update UI, don't restart — that's handled after speech finishes
+      isListening = false;
+      micBtn.classList.remove('listening');
+      micBtn.innerHTML = '&#x1F3A4;';
+    };
+  } else {
+    micBtn.style.display = 'none';
+    convoBtn.style.display = 'none';
+  }
+
+  function startListening() {
+    if (!recognition || isListening || chatSending) return;
+    isListening = true;
+    micBtn.classList.add('listening');
+    micBtn.innerHTML = '&#x23F9;';
+    try { recognition.start(); } catch(e) {}
+  }
+
+  function stopListening() {
+    if (!recognition) return;
+    isListening = false;
+    micBtn.classList.remove('listening');
+    micBtn.innerHTML = '&#x1F3A4;';
+    try { recognition.stop(); } catch(e) {}
+  }
+
+  // Toggle conversation mode
+  convoBtn.onclick = function() {
+    convoMode = !convoMode;
+    convoBtn.classList.toggle('convo-active', convoMode);
+    convoBtn.title = convoMode ? 'Conversation mode ON — tap to disable' : 'Conversation mode — hands-free';
+    if (convoMode && !chatSending) {
+      addChatMessage('system', 'Conversation mode ON — speak freely');
+      startListening();
+    } else if (!convoMode) {
+      stopListening();
+      window.speechSynthesis && window.speechSynthesis.cancel();
+    }
+  };
+
+  micBtn.onclick = function() {
+    if (isListening) { stopListening(); } else { startListening(); }
+  };
+
+  // Speech synthesis — after speaking, re-listen if in convo mode
+  function speakText(text, onDone) {
+    if (!window.speechSynthesis) { if (onDone) onDone(); return; }
+    window.speechSynthesis.cancel();
+    var utter = new SpeechSynthesisUtterance(text);
+    utter.rate = 1.05;
+    utter.pitch = 1.0;
+    utter.onend = function() { if (onDone) onDone(); };
+    utter.onerror = function() { if (onDone) onDone(); };
+    window.speechSynthesis.speak(utter);
+  }
+
+  function addChatMessage(role, text, toolsUsed) {
+    if (chatStatus && chatStatus.parentNode) {
+      chatStatus.parentNode.removeChild(chatStatus);
+      chatStatus = null;
+    }
+
+    var div = document.createElement('div');
+    div.className = 'chat-msg ' + role;
+
+    // Show tool badges for assistant messages
+    if (role === 'assistant' && toolsUsed && toolsUsed.length > 0) {
+      var badgeHtml = '';
+      var toolNames = { get_vehicle_status: 'Vehicle', get_diagnostics: 'DTCs', set_audio_source: 'Audio', set_volume: 'Volume', set_equalizer: 'EQ', get_audio_status: 'Audio', plan_route: 'Nav', get_navigation_status: 'GPS', list_profiles: 'Profiles', create_profile: 'Profile+', activate_profile: 'Profile', get_system_health: 'Health', get_performance_metrics: 'Perf', play_media: 'Media' };
+      var seen = {};
+      toolsUsed.forEach(function(t) {
+        if (!seen[t]) {
+          badgeHtml += '<span class="tool-badge">' + (toolNames[t] || t) + '</span>';
+          seen[t] = true;
+        }
+      });
+      div.innerHTML = badgeHtml + '<br>' + text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    } else {
+      div.textContent = text;
+    }
+
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+  }
+
+  function showThinking() {
+    var div = document.createElement('div');
+    div.className = 'chat-msg assistant';
+    div.id = 'chat-thinking';
+    div.innerHTML = '<div class="chat-thinking"><span></span><span></span><span></span></div>';
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function removeThinking() {
+    var el = document.getElementById('chat-thinking');
+    if (el) el.parentNode.removeChild(el);
+  }
+
+  function onResponseDone() {
+    // In conversation mode, start listening again after Claude finishes speaking
+    if (convoMode && chatAvailable) {
+      setTimeout(function() { startListening(); }, 400);
+    }
+  }
+
+  function sendChatMessage(text) {
+    if (!text || !text.trim() || chatSending || !chatAvailable) return;
+
+    var msg = text.trim();
+    chatInput.value = '';
+    addChatMessage('user', msg);
+    showThinking();
+    chatSending = true;
+    sendBtn.disabled = true;
+
+    fetch('/api/v1/chat/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      removeThinking();
+      chatSending = false;
+      sendBtn.disabled = false;
+      if (data.success && data.data.reply) {
+        addChatMessage('assistant', data.data.reply, data.data.toolsUsed);
+        // If tools changed audio, refresh the UI
+        if (data.data.toolsUsed && data.data.toolsUsed.some(function(t) {
+          return t.indexOf('audio') >= 0 || t.indexOf('volume') >= 0 || t.indexOf('equalizer') >= 0;
+        })) {
+          refreshAudioState();
+        }
+        // Handle media commands from Claude
+        if (data.data.mediaCommands) {
+          data.data.mediaCommands.forEach(handleMediaCommand);
+        }
+        speakText(data.data.reply, onResponseDone);
+      } else {
+        addChatMessage('system', data.error ? data.error.message : 'Failed to get response');
+        onResponseDone();
+      }
+    })
+    .catch(function() {
+      removeThinking();
+      chatSending = false;
+      sendBtn.disabled = false;
+      addChatMessage('system', 'Connection error');
+      onResponseDone();
+    });
+  }
+
+  function refreshAudioState() {
+    fetch('/api/v1/audio/sources').then(function(r) { return r.json(); }).then(function(data) {
+      if (data.data && data.data.sources) {
+        audioSources = data.data.sources;
+        activeSource = data.data.activeSource || 'radio';
+        renderAudioSources();
+      }
+    }).catch(function() {});
+    fetch('/api/v1/audio/controls').then(function(r) { return r.json(); }).then(function(data) {
+      if (data.data) updateAudioControls(data.data);
+    }).catch(function() {});
+  }
+
+  sendBtn.onclick = function() { sendChatMessage(chatInput.value); };
+  chatInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { sendChatMessage(chatInput.value); }
+  });
+
+  // Check if Claude is available
+  fetch('/api/v1/chat/status').then(function(r) { return r.json(); }).then(function(data) {
+    chatAvailable = data.data && data.data.available;
+    if (chatAvailable) {
+      if (chatStatus) chatStatus.textContent = 'Ask about your car, or say "switch to bluetooth"';
+    } else {
+      if (chatStatus) chatStatus.textContent = 'Set ANTHROPIC_API_KEY to enable AI assistant';
+      chatInput.disabled = true;
+      sendBtn.disabled = true;
+      micBtn.disabled = true;
+      convoBtn.disabled = true;
+    }
+  }).catch(function() {
+    if (chatStatus) chatStatus.textContent = 'Chat unavailable';
+  });
+
+})();
+</script>
+
+</body>
+</html>
