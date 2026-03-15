@@ -181,7 +181,7 @@ class CanDriver {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

@@ -63,7 +63,7 @@ class SystemWatchdog extends EventEmitter {
    */
   ping(name) {
     const watcher = this._watchers.get(name);
-    if (!watcher) return false;
+    if (!watcher) {return false;}
     watcher.lastPing = Date.now();
     return true;
   }
@@ -72,10 +72,10 @@ class SystemWatchdog extends EventEmitter {
    * Start the watchdog
    */
   start() {
-    if (this._started) return;
+    if (this._started) {return;}
     this._started = true;
     this._checkTimer = setInterval(() => this._checkAll(), this._checkInterval);
-    if (this._checkTimer.unref) this._checkTimer.unref();
+    if (this._checkTimer.unref) {this._checkTimer.unref();}
     logger.info('System watchdog started');
   }
 
@@ -96,7 +96,7 @@ class SystemWatchdog extends EventEmitter {
    */
   getStatus(name) {
     const watcher = this._watchers.get(name);
-    if (!watcher) return null;
+    if (!watcher) {return null;}
     const timeSincePing = Date.now() - watcher.lastPing;
     return {
       name: watcher.name,
@@ -167,7 +167,7 @@ class SystemWatchdog extends EventEmitter {
     const now = Date.now();
 
     for (const [name, watcher] of this._watchers) {
-      if (!watcher.active) continue;
+      if (!watcher.active) {continue;}
 
       const elapsed = now - watcher.lastPing;
       if (elapsed > watcher.timeout) {

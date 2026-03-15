@@ -74,7 +74,7 @@ class ComponentMonitor extends EventEmitter {
    */
   getState(name) {
     const entry = this._components.get(name);
-    if (!entry) return null;
+    if (!entry) {return null;}
     return {
       name: entry.name,
       state: entry.state,
@@ -156,7 +156,7 @@ class ComponentMonitor extends EventEmitter {
    */
   reportError(name, error) {
     const entry = this._components.get(name);
-    if (!entry) return;
+    if (!entry) {return;}
     entry.errors.push({
       message: error.message || error,
       timestamp: Date.now(),
@@ -219,10 +219,10 @@ class ComponentMonitor extends EventEmitter {
    * Start periodic monitoring
    */
   start() {
-    if (this._started) return;
+    if (this._started) {return;}
     this._started = true;
     this._monitorTimer = setInterval(() => this._runHealthChecks(), this._monitorInterval);
-    if (this._monitorTimer.unref) this._monitorTimer.unref();
+    if (this._monitorTimer.unref) {this._monitorTimer.unref();}
     logger.info('Component monitor started');
   }
 

@@ -190,7 +190,7 @@ class SafeMode extends EventEmitter {
    */
   async checkSafetyFunction(name) {
     const sf = this._safetyFunctions.get(name);
-    if (!sf) return null;
+    if (!sf) {return null;}
 
     try {
       await sf.fn();

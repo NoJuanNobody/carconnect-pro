@@ -90,7 +90,7 @@ class FaultManager extends EventEmitter {
    */
   acknowledgeFault(faultId) {
     const fault = this._faults.get(faultId);
-    if (!fault) return false;
+    if (!fault) {return false;}
     fault.state = FaultState.ACKNOWLEDGED;
     this.emit('faultAcknowledged', fault);
     return true;
@@ -101,7 +101,7 @@ class FaultManager extends EventEmitter {
    */
   resolveFault(faultId, resolution = {}) {
     const fault = this._faults.get(faultId);
-    if (!fault) return false;
+    if (!fault) {return false;}
     fault.state = FaultState.RESOLVED;
     fault.resolvedAt = Date.now();
     fault.resolution = resolution;

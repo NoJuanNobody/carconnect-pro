@@ -155,7 +155,7 @@ class TrafficApi {
    */
   clearIncident(incidentId) {
     const incident = this.incidents.get(incidentId);
-    if (!incident) return false;
+    if (!incident) {return false;}
 
     incident.active = false;
     incident.clearedAt = new Date().toISOString();
@@ -217,7 +217,7 @@ class TrafficApi {
 
   _getIncidentsNear(from, to) {
     return Array.from(this.incidents.values()).filter((incident) => {
-      if (!incident.active) return false;
+      if (!incident.active) {return false;}
       const lat = incident.latitude;
       const lon = incident.longitude;
       const minLat = Math.min(from.latitude, to.latitude) - 0.1;
@@ -229,10 +229,10 @@ class TrafficApi {
   }
 
   _multiplierToSeverity(multiplier) {
-    if (multiplier >= 2.0) return TRAFFIC_SEVERITY.SEVERE;
-    if (multiplier >= 1.5) return TRAFFIC_SEVERITY.HEAVY;
-    if (multiplier >= 1.25) return TRAFFIC_SEVERITY.MODERATE;
-    if (multiplier >= 1.1) return TRAFFIC_SEVERITY.LOW;
+    if (multiplier >= 2.0) {return TRAFFIC_SEVERITY.SEVERE;}
+    if (multiplier >= 1.5) {return TRAFFIC_SEVERITY.HEAVY;}
+    if (multiplier >= 1.25) {return TRAFFIC_SEVERITY.MODERATE;}
+    if (multiplier >= 1.1) {return TRAFFIC_SEVERITY.LOW;}
     return TRAFFIC_SEVERITY.NONE;
   }
 

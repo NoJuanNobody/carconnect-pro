@@ -106,7 +106,7 @@ class HealthCheckService extends EventEmitter {
    */
   getComponentStatus(name) {
     const component = this._components.get(name);
-    if (!component) return null;
+    if (!component) {return null;}
     return {
       name: component.name,
       status: component.status,
@@ -146,10 +146,10 @@ class HealthCheckService extends EventEmitter {
    * Start periodic health checks
    */
   start() {
-    if (this._started) return;
+    if (this._started) {return;}
     this._started = true;
     this._checkTimer = setInterval(() => this.checkAll(), this._checkInterval);
-    if (this._checkTimer.unref) this._checkTimer.unref();
+    if (this._checkTimer.unref) {this._checkTimer.unref();}
     logger.info('Health check service started');
   }
 
@@ -241,12 +241,12 @@ class HealthCheckService extends EventEmitter {
       if (result.status === ComponentStatus.UNHEALTHY && component && component.critical) {
         return ComponentStatus.UNHEALTHY;
       }
-      if (result.status === ComponentStatus.UNHEALTHY) hasUnhealthy = true;
-      if (result.status === ComponentStatus.DEGRADED) hasDegraded = true;
+      if (result.status === ComponentStatus.UNHEALTHY) {hasUnhealthy = true;}
+      if (result.status === ComponentStatus.DEGRADED) {hasDegraded = true;}
     }
 
-    if (hasUnhealthy) return ComponentStatus.DEGRADED;
-    if (hasDegraded) return ComponentStatus.DEGRADED;
+    if (hasUnhealthy) {return ComponentStatus.DEGRADED;}
+    if (hasDegraded) {return ComponentStatus.DEGRADED;}
     return ComponentStatus.HEALTHY;
   }
 }

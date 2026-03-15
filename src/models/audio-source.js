@@ -75,7 +75,7 @@ class AudioSource {
   findById(id) {
     const stmt = this.db.prepare('SELECT * FROM audio_sources WHERE id = ?');
     const row = stmt.get(id);
-    if (!row) return null;
+    if (!row) {return null;}
     return this._deserialize(row);
   }
 

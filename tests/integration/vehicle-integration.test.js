@@ -1,8 +1,7 @@
 'use strict';
 
 const { VehicleService } = require('../../src/services/vehicle-service');
-const { CanController, CAN_IDS } = require('../../src/hardware/can-controller');
-const { GpsController } = require('../../src/hardware/gps-controller');
+const { CAN_IDS } = require('../../src/hardware/can-controller');
 const { IgnitionHandler, IGNITION_STATES, SAFETY_MODES } = require('../../src/safety/ignition-handler');
 const { HalManager } = require('../../src/hal/hal-manager');
 const { CanDriver } = require('../../src/drivers/can-driver');

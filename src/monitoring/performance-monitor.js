@@ -53,11 +53,11 @@ class PerformanceMonitor extends EventEmitter {
   }
 
   start() {
-    if (this._started) return;
+    if (this._started) {return;}
     this._started = true;
     this._collector.start();
     this._monitorTimer = setInterval(() => this._collectSystemMetrics(), this._monitorInterval);
-    if (this._monitorTimer.unref) this._monitorTimer.unref();
+    if (this._monitorTimer.unref) {this._monitorTimer.unref();}
     logger.info('Performance monitor started');
   }
 
@@ -130,11 +130,11 @@ class PerformanceMonitor extends EventEmitter {
   checkRegression(metricName) {
     const baseline = this._regressionBaselines.get(metricName);
     const current = this._collector.getStats(metricName);
-    if (!baseline || !current) return null;
+    if (!baseline || !current) {return null;}
 
     const baselineAvg = baseline.avg;
     const currentAvg = current.avg;
-    if (baselineAvg === 0) return null;
+    if (baselineAvg === 0) {return null;}
 
     const degradation = (currentAvg - baselineAvg) / baselineAvg;
     const regressed = degradation > this._regressionThreshold;
@@ -174,11 +174,11 @@ class PerformanceMonitor extends EventEmitter {
       if (threshold) {
         const value = threshold.inverted ? stats.last : stats.avg;
         if (threshold.inverted) {
-          if (value <= threshold.critical) status = 'critical';
-          else if (value <= threshold.warn) status = 'warning';
+          if (value <= threshold.critical) {status = 'critical';}
+          else if (value <= threshold.warn) {status = 'warning';}
         } else {
-          if (value >= threshold.critical) status = 'critical';
-          else if (value >= threshold.warn) status = 'warning';
+          if (value >= threshold.critical) {status = 'critical';}
+          else if (value >= threshold.warn) {status = 'warning';}
         }
       }
       dashboard[name] = {
@@ -222,15 +222,15 @@ class PerformanceMonitor extends EventEmitter {
   _checkThreshold(data) {
     const { name, value } = data;
     const threshold = this._thresholds[name];
-    if (!threshold) return;
+    if (!threshold) {return;}
 
     let level = null;
     if (threshold.inverted) {
-      if (value <= threshold.critical) level = 'critical';
-      else if (value <= threshold.warn) level = 'warning';
+      if (value <= threshold.critical) {level = 'critical';}
+      else if (value <= threshold.warn) {level = 'warning';}
     } else {
-      if (value >= threshold.critical) level = 'critical';
-      else if (value >= threshold.warn) level = 'warning';
+      if (value >= threshold.critical) {level = 'critical';}
+      else if (value >= threshold.warn) {level = 'warning';}
     }
 
     if (level) {

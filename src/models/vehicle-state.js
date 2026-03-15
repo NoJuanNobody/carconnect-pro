@@ -86,7 +86,7 @@ class VehicleState {
   findById(id) {
     const stmt = this.db.prepare('SELECT * FROM vehicle_states WHERE id = ?');
     const row = stmt.get(id);
-    if (!row) return null;
+    if (!row) {return null;}
     return this._deserialize(row);
   }
 
@@ -98,7 +98,7 @@ class VehicleState {
   findLatest() {
     const stmt = this.db.prepare('SELECT * FROM vehicle_states ORDER BY updated_at DESC LIMIT 1');
     const row = stmt.get();
-    if (!row) return null;
+    if (!row) {return null;}
     return this._deserialize(row);
   }
 

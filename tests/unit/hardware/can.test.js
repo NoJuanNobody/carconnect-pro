@@ -3,8 +3,6 @@
 const {
   CanController,
   CAN_IDS,
-  GEAR_POSITIONS,
-  STEERING_BUTTONS,
   CONTROLLER_STATES,
 } = require('../../../src/hardware/can-controller');
 

@@ -155,7 +155,7 @@ class LinuxAdapter {
     this._emit('gpioChange', { pin, value });
   }
 
-  readGpioPin(pin) {
+  readGpioPin(_pin) {
     this._ensureReady();
     // Simulated GPIO read
     return 0;
@@ -190,7 +190,7 @@ class LinuxAdapter {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

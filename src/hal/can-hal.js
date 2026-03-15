@@ -130,7 +130,7 @@ class CanHal {
       const matches = this._filters.some(
         (f) => (frame.id & f.mask) === (f.id & f.mask),
       );
-      if (!matches) return null;
+      if (!matches) {return null;}
     }
 
     logger.debug('CAN RX', { arbitrationId: `0x${frame.id.toString(16)}` });
@@ -202,7 +202,7 @@ class CanHal {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

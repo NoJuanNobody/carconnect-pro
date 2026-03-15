@@ -89,7 +89,7 @@ class GracefulDegradation extends EventEmitter {
    */
   isFeatureAvailable(name) {
     const feature = this._features.get(name);
-    if (!feature) return false;
+    if (!feature) {return false;}
     return feature.enabled;
   }
 
@@ -98,7 +98,7 @@ class GracefulDegradation extends EventEmitter {
    */
   getFeatureFallback(name) {
     const feature = this._features.get(name);
-    if (!feature) return null;
+    if (!feature) {return null;}
     return feature.fallback;
   }
 
@@ -107,7 +107,7 @@ class GracefulDegradation extends EventEmitter {
    */
   disableFeature(name) {
     const feature = this._features.get(name);
-    if (!feature) return false;
+    if (!feature) {return false;}
 
     if (feature.category === FeatureCategory.CRITICAL) {
       logger.warn('Attempted to disable critical feature - denied', { feature: name });
@@ -129,7 +129,7 @@ class GracefulDegradation extends EventEmitter {
    */
   enableFeature(name) {
     const feature = this._features.get(name);
-    if (!feature) return false;
+    if (!feature) {return false;}
 
     feature.enabled = true;
     this._disabledFeatures.delete(name);
@@ -191,7 +191,7 @@ class GracefulDegradation extends EventEmitter {
     for (const handler of handlers) {
       try {
         const result = await handler();
-        if (!result) recovered = false;
+        if (!result) {recovered = false;}
       } catch (err) {
         logger.error('Recovery handler failed', { error: err.message });
         recovered = false;
@@ -248,7 +248,7 @@ class GracefulDegradation extends EventEmitter {
   }
 
   _enableAll() {
-    for (const [name, feature] of this._features) {
+    for (const [, feature] of this._features) {
       feature.enabled = true;
     }
     this._disabledFeatures.clear();

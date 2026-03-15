@@ -194,8 +194,8 @@ class UserProfileService {
       throw new Error(`Validation error: ${error.message}`);
     }
 
-    if (value.name !== undefined) profile.name = value.name;
-    if (value.avatar !== undefined) profile.avatar = value.avatar;
+    if (value.name !== undefined) {profile.name = value.name;}
+    if (value.avatar !== undefined) {profile.avatar = value.avatar;}
 
     if (value.audio) {
       profile.audio = this._deepMerge(profile.audio, value.audio);
@@ -266,7 +266,7 @@ class UserProfileService {
    * @returns {object|null}
    */
   getActiveProfile() {
-    if (!this.activeProfileId) return null;
+    if (!this.activeProfileId) {return null;}
     return this.getProfile(this.activeProfileId);
   }
 
@@ -441,7 +441,7 @@ class UserProfileService {
   }
 
   _mergeDefaults(provided, defaults) {
-    if (!provided) return { ...defaults };
+    if (!provided) {return { ...defaults };}
 
     const result = { ...defaults };
     for (const key of Object.keys(provided)) {

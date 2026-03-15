@@ -120,7 +120,7 @@ class GpsController {
   }
 
   getDistanceTo(lat, lon) {
-    if (!this._position) return null;
+    if (!this._position) {return null;}
     return this._haversine(
       this._position.latitude,
       this._position.longitude,
@@ -130,7 +130,7 @@ class GpsController {
   }
 
   getDistanceTraveled() {
-    if (!this._position || !this._previousPosition) return 0;
+    if (!this._position || !this._previousPosition) {return 0;}
     return this._haversine(
       this._previousPosition.latitude,
       this._previousPosition.longitude,
@@ -228,7 +228,7 @@ class GpsController {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

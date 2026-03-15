@@ -108,7 +108,7 @@ class UserProfile {
   findById(id) {
     const stmt = this.db.prepare('SELECT * FROM user_profiles WHERE id = ?');
     const row = stmt.get(id);
-    if (!row) return null;
+    if (!row) {return null;}
     return this._deserialize(row);
   }
 

@@ -425,7 +425,7 @@ class NavigationService {
   }
 
   _updateActiveSession(session) {
-    if (!this.currentPosition) return;
+    if (!this.currentPosition) {return;}
 
     const remaining = haversineDistance(
       this.currentPosition,
@@ -439,7 +439,7 @@ class NavigationService {
   }
 
   _generateInstructions(waypoints) {
-    if (waypoints.length < 2) return [];
+    if (waypoints.length < 2) {return [];}
 
     const instructions = [];
 
@@ -478,7 +478,7 @@ class NavigationService {
   }
 
   _triggerVoiceGuidance(event) {
-    if (!this.preferences.voiceGuidance) return;
+    if (!this.preferences.voiceGuidance) {return;}
 
     for (const callback of this.voiceGuidanceCallbacks) {
       try {

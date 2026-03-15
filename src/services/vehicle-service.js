@@ -2,7 +2,7 @@
 
 const { v4: uuidv4 } = require('uuid');
 const winston = require('winston');
-const { CanController, CAN_IDS } = require('../hardware/can-controller');
+const { CanController } = require('../hardware/can-controller');
 const { GpsController } = require('../hardware/gps-controller');
 const { IgnitionHandler } = require('../safety/ignition-handler');
 
@@ -210,7 +210,7 @@ class VehicleService {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

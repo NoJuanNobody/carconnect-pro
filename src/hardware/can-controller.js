@@ -110,7 +110,7 @@ class CanController {
   }
 
   getLatency() {
-    if (this._lastUpdateTime === 0) return -1;
+    if (this._lastUpdateTime === 0) {return -1;}
     return Date.now() - this._lastUpdateTime;
   }
 
@@ -340,7 +340,7 @@ class CanController {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

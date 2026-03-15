@@ -190,7 +190,7 @@ class HalManager {
 
   _performHealthCheck() {
     let hasError = false;
-    let hasDegraded = false;
+    const hasDegraded = false;
 
     for (const [name, module] of this._modules) {
       const status = module.getStatus();
@@ -241,7 +241,7 @@ class HalManager {
     const listeners = this._listeners.get(event);
     if (listeners) {
       const idx = listeners.indexOf(listener);
-      if (idx !== -1) listeners.splice(idx, 1);
+      if (idx !== -1) {listeners.splice(idx, 1);}
     }
   }
 

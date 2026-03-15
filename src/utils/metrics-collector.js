@@ -19,10 +19,10 @@ class MetricsCollector extends EventEmitter {
   }
 
   start() {
-    if (this._started) return;
+    if (this._started) {return;}
     this._started = true;
     this._flushTimer = setInterval(() => this._flush(), this._flushInterval);
-    if (this._flushTimer.unref) this._flushTimer.unref();
+    if (this._flushTimer.unref) {this._flushTimer.unref();}
   }
 
   stop() {
@@ -136,7 +136,7 @@ class MetricsCollector extends EventEmitter {
 
   _aggregate(metric) {
     const values = metric.values.slice();
-    if (values.length === 0) return null;
+    if (values.length === 0) {return null;}
 
     const sorted = values.slice().sort((a, b) => a - b);
     const sum = values.reduce((a, b) => a + b, 0);
@@ -164,12 +164,12 @@ class MetricsCollector extends EventEmitter {
   }
 
   _percentile(sorted, pct) {
-    if (sorted.length === 0) return 0;
-    if (sorted.length === 1) return sorted[0];
+    if (sorted.length === 0) {return 0;}
+    if (sorted.length === 1) {return sorted[0];}
     const idx = (pct / 100) * (sorted.length - 1);
     const lower = Math.floor(idx);
     const upper = Math.ceil(idx);
-    if (lower === upper) return sorted[lower];
+    if (lower === upper) {return sorted[lower];}
     const weight = idx - lower;
     return sorted[lower] * (1 - weight) + sorted[upper] * weight;
   }

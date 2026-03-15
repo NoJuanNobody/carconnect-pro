@@ -90,7 +90,7 @@ class NavigationSession {
   findById(id) {
     const stmt = this.db.prepare('SELECT * FROM navigation_sessions WHERE id = ?');
     const row = stmt.get(id);
-    if (!row) return null;
+    if (!row) {return null;}
     return this._deserialize(row);
   }
 

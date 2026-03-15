@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const DOCS_DIR = path.join(PROJECT_ROOT, 'docs');
+const DOCS_DIR = path.join(PROJECT_ROOT, 'docs'); // eslint-disable-line no-unused-vars
 
 /**
  * Helper: Read file content or return null if not found.
