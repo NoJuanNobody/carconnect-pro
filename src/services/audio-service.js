@@ -26,6 +26,28 @@ class AudioService {
       bass: 0,
       treble: 0,
     };
+    this._listeners = new Map();
+  }
+
+  on(event, fn) {
+    if (!this._listeners.has(event)) {
+      this._listeners.set(event, []);
+    }
+    this._listeners.get(event).push(fn);
+  }
+
+  off(event, fn) {
+    const fns = this._listeners.get(event);
+    if (fns) {
+      this._listeners.set(event, fns.filter((f) => f !== fn));
+    }
+  }
+
+  _emit(event, data) {
+    const fns = this._listeners.get(event) || [];
+    for (const fn of fns) {
+      fn(data);
+    }
   }
 
   getSources() {
@@ -64,13 +86,16 @@ class AudioService {
 
     const elapsed = Date.now() - startTime;
 
-    return {
+    const result = {
       previousSource: previousSourceId,
       currentSource: this.activeSourceId,
       fadeTime: simulatedDelay,
       switchTime: elapsed,
       transactionId: uuidv4(),
     };
+
+    this._emit('audioSourceChange', result);
+    return result;
   }
 
   getControls() {
@@ -87,10 +112,13 @@ class AudioService {
       }
     }
 
-    return {
+    const result = {
       controls: { ...this.controls },
       updatedFields,
     };
+
+    this._emit('audioControlsChange', result);
+    return result;
   }
 
   setSourceConnected(sourceId, connected) {
